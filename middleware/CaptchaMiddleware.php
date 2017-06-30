@@ -2,6 +2,7 @@
 
 use Flash;
 use Closure;
+use Session;
 use ReCaptcha\ReCaptcha;
 use Alxy\Captcha\Models\Settings;
 use October\Rain\Exception\AjaxException;
@@ -32,7 +33,7 @@ class CaptchaMiddleware {
             /**
              * Fail, if the response isn't OK
              */
-            if (! $response->isSuccess()) {
+            if (! $response->isSuccess() && count($response->getErrorCodes())) {
                 if ($request->ajax()) {
                     throw new AjaxException( $response->getErrorCodes() );
                 } else {
@@ -43,6 +44,9 @@ class CaptchaMiddleware {
                     return redirect()->back()->withInput();                  
                 }  
             }
+
+            Session::set("isHuman",true);
+
         }
 
         /**
